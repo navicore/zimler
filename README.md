@@ -1,4 +1,4 @@
-# Zimler - Serge-Inspired Creative Sampler
+# Zimler - Creative Sampler
 
 A polyglot sampler plugin project combining Rust performance with flexible UI options.
 
