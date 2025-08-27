@@ -1,0 +1,16 @@
+# Desktop-specific build artifacts
+/build/
+*.app/
+
+# Platform-specific binaries
+zimler
+zimler.exe
+zimler.app
+
+# Debug symbols
+*.dSYM/
+*.pdb
+
+# Local config (if we add user settings later)
+config.local.toml
+settings.local.json

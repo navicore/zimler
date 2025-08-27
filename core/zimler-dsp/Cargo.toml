@@ -1,0 +1,11 @@
+[package]
+name = "zimler-dsp"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+num-complex = { workspace = true }
+realfft = { workspace = true }
+rubato = { workspace = true }

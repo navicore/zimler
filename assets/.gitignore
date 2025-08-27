@@ -1,0 +1,18 @@
+# Keep the directory structure but ignore large sample files
+*.wav
+*.aiff
+*.flac
+*.mp3
+*.ogg
+
+# But keep any README or documentation
+!README.md
+!*.txt
+
+# Keep small test samples if needed
+!test_*.wav
+
+# Ignore rendered/cached data
+*.cache
+*.rendered
+*.peaks

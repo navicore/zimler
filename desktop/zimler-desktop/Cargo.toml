@@ -1,0 +1,19 @@
+[package]
+name = "zimler-desktop"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "zimler"
+path = "src/main.rs"
+
+[dependencies]
+zimler-engine = { path = "../../core/zimler-engine" }
+zimler-midi = { path = "../../core/zimler-midi" }
+
+bevy = { workspace = true }
+cpal = { workspace = true }
+crossbeam = { workspace = true }
+anyhow = { workspace = true }

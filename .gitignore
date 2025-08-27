@@ -1,0 +1,78 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Cargo lock for libraries (uncomment for applications)
+# Cargo.lock
+
+# IDE and editor files
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+*.iml
+.DS_Store
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+
+# Profiling
+perf.data
+perf.data.old
+flamegraph.svg
+*.profraw
+*.profdata
+
+# Test data and temporary files
+/tmp/
+*.wav.tmp
+*.sample.cache
+
+# OS specific
+Thumbs.db
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Audio samples (if you want to keep test samples out of git)
+# /assets/samples/*.wav
+# /assets/samples/*.aiff
+
+# iOS/Xcode specific (for future)
+ios/build/
+ios/DerivedData/
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcworkspace/xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# WASM build artifacts (for future)
+/pkg/
+/wasm-pack.log
+/www/node_modules/
+/www/dist/
+
+# Benchmark results
+/benches/results/
+
+# Documentation build
+/target/doc/
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Log files
+*.log
+
+# Coverage reports
+*.lcov
+/coverage/
+cobertura.xml
+tarpaulin-report.html

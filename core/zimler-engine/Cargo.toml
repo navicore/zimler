@@ -1,0 +1,21 @@
+[package]
+name = "zimler-engine"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+zimler-dsp = { path = "../zimler-dsp" }
+zimler-midi = { path = "../zimler-midi" }
+
+cpal = { workspace = true }
+crossbeam = { workspace = true }
+parking_lot = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true }
+bincode = { workspace = true }
+
+[dev-dependencies]
+hound = { workspace = true }

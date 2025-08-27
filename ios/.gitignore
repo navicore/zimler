@@ -1,0 +1,55 @@
+# Xcode
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.hmap
+*.ipa
+*.xcscmblueprint
+*.xcworkspace
+!default.xcworkspace
+
+# CocoaPods (if used later)
+Pods/
+Podfile.lock
+
+# Carthage (if used later)
+Carthage/Build/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# Rust iOS artifacts
+libs/
+*.a
+*.dylib
+*.framework
+universal/
+
+# fastlane (if used for deployment)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code signing
+*.mobileprovision
+*.certSigningRequest
+*.cer
+*.p12
+
+# AppStore
+*.app.dSYM.zip
+*.ipa.dSYM.zip
