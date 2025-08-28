@@ -7,6 +7,7 @@ use std::sync::Arc;
 pub struct EngineHandle {
     pub sample_bank: Arc<RwLock<SampleBank>>,
     pub engine_state: Arc<RwLock<EngineState>>,
+    pub command_sender: crossbeam::channel::Sender<EngineCommand>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -79,9 +80,17 @@ pub struct SampleInfo {
 
 impl EngineHandle {
     pub fn send_command(&self, command: EngineCommand) -> Result<(), String> {
-        if let EngineCommand::LoadSample { slot, path } = command {
-            let mut bank = self.sample_bank.write();
-            bank.load_sample(slot, &path).map_err(|e| e.to_string())?;
+        match &command {
+            EngineCommand::LoadSample { slot, path } => {
+                let mut bank = self.sample_bank.write();
+                bank.load_sample(*slot, path).map_err(|e| e.to_string())?;
+            }
+            _ => {
+                // Send other commands to the audio thread
+                self.command_sender
+                    .send(command)
+                    .map_err(|e| e.to_string())?;
+            }
         }
         Ok(())
     }

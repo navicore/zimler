@@ -59,6 +59,10 @@ impl Voice {
         self.state != VoiceState::Idle
     }
 
+    pub fn get_note(&self) -> Option<u8> {
+        self.note
+    }
+
     pub fn process_block(&mut self, output: &mut [f32]) {
         if let Some(sample) = &self.sample {
             let channels = sample.channels;
