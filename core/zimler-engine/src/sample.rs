@@ -1,5 +1,7 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
+use hound;
 use std::collections::HashMap;
+use std::path::Path;
 
 #[derive(Debug, Clone)]
 pub struct Sample {
@@ -51,12 +53,42 @@ impl SampleBank {
         }
     }
 
-    pub fn load_sample(&mut self, slot: usize, _path: &str) -> Result<()> {
-        // For now, create a test sample
-        let test_sample = Sample::new(vec![0.0; 48000], 48000.0, 1);
-
-        self.samples.insert(slot, test_sample);
+    pub fn load_sample(&mut self, slot: usize, path: &str) -> Result<()> {
+        let sample = Self::load_wav(path)?;
+        self.samples.insert(slot, sample);
         Ok(())
+    }
+
+    fn load_wav(path: &str) -> Result<Sample> {
+        let path = Path::new(path);
+        if !path.exists() {
+            return Err(anyhow!("File not found: {:?}", path));
+        }
+
+        let mut reader = hound::WavReader::open(path)?;
+        let spec = reader.spec();
+
+        // Convert to f32 samples
+        let mut data = Vec::new();
+        match spec.sample_format {
+            hound::SampleFormat::Float => {
+                for sample in reader.samples::<f32>() {
+                    data.push(sample?);
+                }
+            }
+            hound::SampleFormat::Int => {
+                let max_val = (1 << (spec.bits_per_sample - 1)) as f32;
+                for sample in reader.samples::<i32>() {
+                    data.push(sample? as f32 / max_val);
+                }
+            }
+        }
+
+        // If stereo, interleave the channels
+        let channels = spec.channels as usize;
+        let sample_rate = spec.sample_rate as f32;
+
+        Ok(Sample::new(data, sample_rate, channels))
     }
 
     pub fn get_sample_for_note(&mut self, note: u8, velocity: f32) -> Option<&Sample> {

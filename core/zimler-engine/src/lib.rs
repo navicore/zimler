@@ -43,6 +43,8 @@ pub struct ZimlerEngine {
     mixer: Mixer,
     sample_bank: Arc<RwLock<SampleBank>>,
     engine_state: Arc<RwLock<EngineState>>,
+    commands: crossbeam::channel::Receiver<EngineCommand>,
+    command_sender: crossbeam::channel::Sender<EngineCommand>,
 }
 
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
@@ -58,16 +60,25 @@ impl ZimlerEngine {
             .map(|_| Voice::new(config.sample_rate))
             .collect();
 
+        let (tx, rx) = crossbeam::channel::unbounded();
+
         Self {
             config,
             voices,
             mixer: Mixer::new(),
             sample_bank: Arc::new(RwLock::new(SampleBank::new())),
             engine_state: Arc::new(RwLock::new(EngineState::default())),
+            commands: rx,
+            command_sender: tx,
         }
     }
 
     pub fn process_block(&mut self, output: &mut [f32]) {
+        // Process any pending commands
+        while let Ok(command) = self.commands.try_recv() {
+            self.handle_command(command);
+        }
+
         output.fill(0.0);
 
         let mut temp_buffer = vec![0.0; output.len()];
@@ -86,10 +97,35 @@ impl ZimlerEngine {
         state.active_voices = active_count;
     }
 
+    fn handle_command(&mut self, command: EngineCommand) {
+        match command {
+            EngineCommand::TriggerNote { note, velocity } => {
+                // Find an idle voice
+                if let Some(voice) = self.voices.iter_mut().find(|v| !v.is_active()) {
+                    // Get the sample for this note
+                    let mut bank = self.sample_bank.write();
+                    if let Some(sample) = bank.get_sample_for_note(note, velocity) {
+                        voice.trigger(note, velocity, sample.clone());
+                    }
+                }
+            }
+            EngineCommand::ReleaseNote { note } => {
+                // Release all voices playing this note
+                for voice in &mut self.voices {
+                    if voice.get_note() == Some(note) {
+                        voice.release();
+                    }
+                }
+            }
+            _ => {} // Other commands handled elsewhere
+        }
+    }
+
     pub fn get_api_handle(&self) -> EngineHandle {
         EngineHandle {
             sample_bank: Arc::clone(&self.sample_bank),
             engine_state: Arc::clone(&self.engine_state),
+            command_sender: self.command_sender.clone(),
         }
     }
 }

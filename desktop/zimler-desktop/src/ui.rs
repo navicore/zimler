@@ -146,7 +146,7 @@ fn setup_ui(mut commands: Commands) {
 
                 // Instructions
                 parent.spawn((
-                    Text::new("Press A-K for notes C-B\nSpace to load sample\nE to change envelope"),
+                    Text::new("Keys:\nA-K: Play notes C-B\n1-3: Load samples (sine/click/sweep)\nSpace: Load sine wave"),
                     TextFont {
                         font_size: 14.0,
                         ..default()
@@ -192,10 +192,41 @@ fn handle_keyboard_input(keyboard: Res<ButtonInput<KeyCode>>, engine: Res<Engine
 
     // Load sample with spacebar
     if keyboard.just_pressed(KeyCode::Space) {
+        // Try to load our generated test sample
+        let result = engine.handle.send_command(EngineCommand::LoadSample {
+            slot: 0,
+            path: "assets/samples/sine_440.wav".to_string(),
+        });
+
+        match result {
+            Ok(()) => println!("Loaded sample: assets/samples/sine_440.wav"),
+            Err(e) => eprintln!("Failed to load sample: {}", e),
+        }
+    }
+
+    // Load different samples with number keys
+    if keyboard.just_pressed(KeyCode::Digit1) {
         let _ = engine.handle.send_command(EngineCommand::LoadSample {
             slot: 0,
-            path: "test.wav".to_string(),
+            path: "assets/samples/sine_440.wav".to_string(),
         });
+        println!("Loaded sine wave");
+    }
+
+    if keyboard.just_pressed(KeyCode::Digit2) {
+        let _ = engine.handle.send_command(EngineCommand::LoadSample {
+            slot: 0,
+            path: "assets/samples/click.wav".to_string(),
+        });
+        println!("Loaded click");
+    }
+
+    if keyboard.just_pressed(KeyCode::Digit3) {
+        let _ = engine.handle.send_command(EngineCommand::LoadSample {
+            slot: 0,
+            path: "assets/samples/sweep.wav".to_string(),
+        });
+        println!("Loaded sweep");
     }
 }
 
