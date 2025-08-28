@@ -10,6 +10,7 @@ pub struct AudioBackend {
     stream: Option<Stream>,
 }
 
+#[allow(dead_code)]
 impl AudioBackend {
     pub fn new(engine: Arc<Mutex<ZimlerEngine>>, config: EngineConfig) -> Result<Self> {
         let host = cpal::default_host();

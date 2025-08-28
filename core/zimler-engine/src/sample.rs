@@ -37,6 +37,12 @@ pub enum SampleMapping {
     RoundRobin { slots: Vec<usize>, current: usize },
 }
 
+impl Default for SampleBank {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SampleBank {
     pub fn new() -> Self {
         Self {

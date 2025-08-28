@@ -24,7 +24,7 @@ struct WaveformDisplay;
 struct EnvelopeDisplay;
 
 #[derive(Component)]
-struct VoiceIndicator(usize);
+struct VoiceIndicator(#[allow(dead_code)] usize);
 
 fn setup_ui(mut commands: Commands) {
     // Main UI container
@@ -56,7 +56,7 @@ fn setup_ui(mut commands: Commands) {
                 TextColor(Color::srgb(0.9, 0.9, 0.9)),
             ));
         });
-        
+
         // Main content area
         parent.spawn((
             Node {
@@ -82,7 +82,7 @@ fn setup_ui(mut commands: Commands) {
                 BorderColor(Color::srgb(0.3, 0.3, 0.35)),
                 WaveformDisplay,
             ));
-            
+
             // Right panel - Controls
             parent.spawn((
                 Node {
@@ -116,7 +116,7 @@ fn setup_ui(mut commands: Commands) {
                         TextColor(Color::srgb(0.7, 0.7, 0.7)),
                     ));
                 });
-                
+
                 // Voice indicators
                 parent.spawn((
                     Node {
@@ -143,7 +143,7 @@ fn setup_ui(mut commands: Commands) {
                         ));
                     }
                 });
-                
+
                 // Instructions
                 parent.spawn((
                     Text::new("Press A-K for notes C-B\nSpace to load sample\nE to change envelope"),

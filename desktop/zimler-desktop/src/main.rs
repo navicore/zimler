@@ -1,3 +1,6 @@
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::missing_const_for_fn)]
+
 use bevy::prelude::*;
 use std::sync::{Arc, Mutex};
 use zimler_engine::{EngineConfig, EngineHandle, ZimlerEngine};
@@ -47,5 +50,5 @@ fn main() {
 
 fn setup_scene(mut commands: Commands) {
     // Camera
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
 }

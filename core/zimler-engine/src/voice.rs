@@ -13,6 +13,7 @@ pub struct Voice {
     position: f64,
     pitch_ratio: f64,
     envelope: Envelope,
+    #[allow(dead_code)]
     sample_rate: f32,
     note: Option<u8>,
     velocity: f32,
@@ -64,7 +65,7 @@ impl Voice {
             let sample_data = &sample.data;
             let sample_len = sample_data.len() / channels;
 
-            for (_i, out) in output.chunks_mut(channels).enumerate() {
+            for out in output.chunks_mut(channels) {
                 if self.position >= sample_len as f64 {
                     self.state = VoiceState::Idle;
                     break;

@@ -7,6 +7,12 @@ pub struct Mixer {
     blur_position: usize,
 }
 
+impl Default for Mixer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Mixer {
     pub fn new() -> Self {
         Self {

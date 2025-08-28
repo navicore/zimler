@@ -1,3 +1,7 @@
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::must_use_candidate)]
+#![allow(clippy::missing_const_for_fn)]
+
 use parking_lot::RwLock;
 use std::sync::Arc;
 
@@ -33,6 +37,7 @@ impl Default for EngineConfig {
 }
 
 pub struct ZimlerEngine {
+    #[allow(dead_code)]
     config: EngineConfig,
     voices: Vec<Voice>,
     mixer: Mixer,

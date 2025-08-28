@@ -1,0 +1,13 @@
+# Clippy configuration
+msrv = "1.75"
+
+# Allow common patterns that are fine
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+allow-dbg-in-tests = true
+allow-print-in-tests = true
+
+# Threshold settings
+too-many-arguments-threshold = 8
+too-many-lines-threshold = 200
+cognitive-complexity-threshold = 30

@@ -79,12 +79,9 @@ pub struct SampleInfo {
 
 impl EngineHandle {
     pub fn send_command(&self, command: EngineCommand) -> Result<(), String> {
-        match command {
-            EngineCommand::LoadSample { slot, path } => {
-                let mut bank = self.sample_bank.write();
-                bank.load_sample(slot, &path).map_err(|e| e.to_string())?;
-            }
-            _ => {}
+        if let EngineCommand::LoadSample { slot, path } = command {
+            let mut bank = self.sample_bank.write();
+            bank.load_sample(slot, &path).map_err(|e| e.to_string())?;
         }
         Ok(())
     }

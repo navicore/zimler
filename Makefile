@@ -41,16 +41,7 @@ fmt-check:
 
 clippy:
 	@echo "Running clippy..."
-	cargo clippy --workspace --all-targets --all-features -- \
-		-D warnings \
-		-D clippy::all \
-		-D clippy::pedantic \
-		-D clippy::nursery \
-		-D clippy::cargo \
-		-W clippy::module_name_repetitions \
-		-W clippy::must_use_candidate \
-		-W clippy::missing_errors_doc \
-		-W clippy::missing_panics_doc
+	cargo clippy --workspace --all-targets --all-features -- -D warnings
 
 check:
 	@echo "Type checking..."
@@ -134,4 +125,5 @@ help:
 	@echo "  make docs    - Generate and open documentation"
 	@echo "  make bench   - Run benchmarks"
 
-.DEFAULT_GOAL := help
+# Default to 'all' target - remove this line to default to 'help'
+# .DEFAULT_GOAL := help

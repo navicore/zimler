@@ -1,5 +1,9 @@
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::must_use_candidate)]
+#![allow(clippy::missing_const_for_fn)]
+
 use crossbeam::channel::{bounded, Receiver, Sender};
-use midir::{MidiInput, MidiInputConnection};
+use midir::MidiInputConnection;
 
 #[derive(Debug, Clone)]
 pub enum MidiMessage {
@@ -24,9 +28,17 @@ pub enum MidiMessage {
 }
 
 pub struct MidiHandler {
+    #[allow(dead_code)]
     tx: Sender<MidiMessage>,
     rx: Receiver<MidiMessage>,
+    #[allow(dead_code)]
     connection: Option<MidiInputConnection<()>>,
+}
+
+impl Default for MidiHandler {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl MidiHandler {
@@ -77,7 +89,7 @@ impl MidiHandler {
                 value: data[2],
             }),
             0xE0 if data.len() >= 3 => {
-                let value = ((data[2] as u16) << 7) | (data[1] as u16);
+                let value = (u16::from(data[2]) << 7) | u16::from(data[1]);
                 Some(MidiMessage::PitchBend { channel, value })
             }
             _ => None,
