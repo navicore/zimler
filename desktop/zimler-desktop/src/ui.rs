@@ -1,17 +1,19 @@
+use crate::EngineResource;
 use bevy::prelude::*;
 use zimler_engine::EngineCommand;
-use crate::EngineResource;
 
 pub struct ZimlerUiPlugin;
 
 impl Plugin for ZimlerUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_ui)
-           .add_systems(Update, (
-               handle_keyboard_input,
-               update_waveform_display,
-               update_envelope_display,
-           ));
+        app.add_systems(Startup, setup_ui).add_systems(
+            Update,
+            (
+                handle_keyboard_input,
+                update_waveform_display,
+                update_envelope_display,
+            ),
+        );
     }
 }
 
@@ -24,9 +26,7 @@ struct EnvelopeDisplay;
 #[derive(Component)]
 struct VoiceIndicator(usize);
 
-fn setup_ui(
-    mut commands: Commands,
-) {
+fn setup_ui(mut commands: Commands) {
     // Main UI container
     commands.spawn((
         Node {
@@ -158,27 +158,24 @@ fn setup_ui(
     });
 }
 
-fn handle_keyboard_input(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    engine: Res<EngineResource>,
-) {
+fn handle_keyboard_input(keyboard: Res<ButtonInput<KeyCode>>, engine: Res<EngineResource>) {
     // Musical keyboard mapping
     let key_to_note = [
-        (KeyCode::KeyA, 60),  // C
-        (KeyCode::KeyW, 61),  // C#
-        (KeyCode::KeyS, 62),  // D
-        (KeyCode::KeyE, 63),  // D#
-        (KeyCode::KeyD, 64),  // E
-        (KeyCode::KeyF, 65),  // F
-        (KeyCode::KeyT, 66),  // F#
-        (KeyCode::KeyG, 67),  // G
-        (KeyCode::KeyY, 68),  // G#
-        (KeyCode::KeyH, 69),  // A
-        (KeyCode::KeyU, 70),  // A#
-        (KeyCode::KeyJ, 71),  // B
-        (KeyCode::KeyK, 72),  // C
+        (KeyCode::KeyA, 60), // C
+        (KeyCode::KeyW, 61), // C#
+        (KeyCode::KeyS, 62), // D
+        (KeyCode::KeyE, 63), // D#
+        (KeyCode::KeyD, 64), // E
+        (KeyCode::KeyF, 65), // F
+        (KeyCode::KeyT, 66), // F#
+        (KeyCode::KeyG, 67), // G
+        (KeyCode::KeyY, 68), // G#
+        (KeyCode::KeyH, 69), // A
+        (KeyCode::KeyU, 70), // A#
+        (KeyCode::KeyJ, 71), // B
+        (KeyCode::KeyK, 72), // C
     ];
-    
+
     for (key, note) in key_to_note {
         if keyboard.just_pressed(key) {
             let _ = engine.handle.send_command(EngineCommand::TriggerNote {
@@ -187,10 +184,12 @@ fn handle_keyboard_input(
             });
         }
         if keyboard.just_released(key) {
-            let _ = engine.handle.send_command(EngineCommand::ReleaseNote { note });
+            let _ = engine
+                .handle
+                .send_command(EngineCommand::ReleaseNote { note });
         }
     }
-    
+
     // Load sample with spacebar
     if keyboard.just_pressed(KeyCode::Space) {
         let _ = engine.handle.send_command(EngineCommand::LoadSample {

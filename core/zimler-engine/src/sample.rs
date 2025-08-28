@@ -47,29 +47,22 @@ impl SampleBank {
 
     pub fn load_sample(&mut self, slot: usize, _path: &str) -> Result<()> {
         // For now, create a test sample
-        let test_sample = Sample::new(
-            vec![0.0; 48000], 
-            48000.0, 
-            1
-        );
-        
+        let test_sample = Sample::new(vec![0.0; 48000], 48000.0, 1);
+
         self.samples.insert(slot, test_sample);
         Ok(())
     }
 
     pub fn get_sample_for_note(&mut self, note: u8, velocity: f32) -> Option<&Sample> {
         match &mut self.current_mapping {
-            SampleMapping::ChromaticSingle { slot } => {
-                self.samples.get(slot)
-            },
+            SampleMapping::ChromaticSingle { slot } => self.samples.get(slot),
             SampleMapping::MultiSample(map) => {
                 map.get(&note).and_then(|slot| self.samples.get(slot))
-            },
-            SampleMapping::Velocity(layers) => {
-                layers.iter()
-                    .find(|(thresh, _)| velocity <= *thresh)
-                    .and_then(|(_, slot)| self.samples.get(slot))
-            },
+            }
+            SampleMapping::Velocity(layers) => layers
+                .iter()
+                .find(|(thresh, _)| velocity <= *thresh)
+                .and_then(|(_, slot)| self.samples.get(slot)),
             SampleMapping::RoundRobin { slots, current } => {
                 let slot = slots.get(*current)?;
                 *current = (*current + 1) % slots.len();

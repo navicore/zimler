@@ -2,16 +2,16 @@ use parking_lot::RwLock;
 use std::sync::Arc;
 
 pub mod api;
-pub mod sample;
-pub mod voice;
 pub mod envelope;
 pub mod mixer;
+pub mod sample;
+pub mod voice;
 
 pub use api::*;
-pub use sample::*;
-pub use voice::*;
 pub use envelope::*;
 pub use mixer::*;
+pub use sample::*;
+pub use voice::*;
 
 #[derive(Debug, Clone)]
 pub struct EngineConfig {
@@ -64,19 +64,19 @@ impl ZimlerEngine {
 
     pub fn process_block(&mut self, output: &mut [f32]) {
         output.fill(0.0);
-        
+
         let mut temp_buffer = vec![0.0; output.len()];
         let mut active_count = 0;
-        
+
         for voice in &mut self.voices {
             if voice.is_active() {
                 voice.process_block(&mut temp_buffer);
                 active_count += 1;
             }
         }
-        
+
         self.mixer.mix(&temp_buffer, output);
-        
+
         let mut state = self.engine_state.write();
         state.active_voices = active_count;
     }

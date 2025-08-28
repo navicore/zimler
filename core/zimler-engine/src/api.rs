@@ -1,7 +1,7 @@
-use crate::{SampleBank, EngineState, EnvelopeShape};
+use crate::{EngineState, EnvelopeShape, SampleBank};
 use parking_lot::RwLock;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use serde::{Serialize, Deserialize};
 
 #[derive(Clone)]
 pub struct EngineHandle {
@@ -11,27 +11,12 @@ pub struct EngineHandle {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EngineCommand {
-    LoadSample { 
-        slot: usize, 
-        path: String 
-    },
-    TriggerNote { 
-        note: u8, 
-        velocity: f32 
-    },
-    ReleaseNote { 
-        note: u8 
-    },
-    SetEnvelope { 
-        envelope: EnvelopeShape 
-    },
-    SetMixMode { 
-        mode: MixMode 
-    },
-    SetParameter { 
-        param: Parameter, 
-        value: f32 
-    },
+    LoadSample { slot: usize, path: String },
+    TriggerNote { note: u8, velocity: f32 },
+    ReleaseNote { note: u8 },
+    SetEnvelope { envelope: EnvelopeShape },
+    SetMixMode { mode: MixMode },
+    SetParameter { param: Parameter, value: f32 },
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -97,9 +82,8 @@ impl EngineHandle {
         match command {
             EngineCommand::LoadSample { slot, path } => {
                 let mut bank = self.sample_bank.write();
-                bank.load_sample(slot, &path)
-                    .map_err(|e| e.to_string())?;
-            },
+                bank.load_sample(slot, &path).map_err(|e| e.to_string())?;
+            }
             _ => {}
         }
         Ok(())
@@ -114,12 +98,12 @@ impl EngineHandle {
                     data: Some(ResponseData::State(state)),
                     error: None,
                 }
-            },
+            }
             _ => EngineResponse {
                 success: false,
                 data: None,
                 error: Some("Not implemented".to_string()),
-            }
+            },
         }
     }
 }

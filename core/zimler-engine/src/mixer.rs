@@ -32,11 +32,11 @@ impl Mixer {
                 for (i, sample) in input.iter().enumerate() {
                     output[i] += sample * self.master_volume;
                 }
-            },
+            }
             MixMode::Blur { crossfade_ms } => {
                 // Serge-style blurring with overlap
                 let blur_len = (crossfade_ms * 48.0) as usize;
-                
+
                 for (i, sample) in input.iter().enumerate() {
                     // Mix with previous content in circular buffer
                     let blur_idx = (self.blur_position + i) % blur_len;
@@ -44,22 +44,22 @@ impl Mixer {
                     self.blur_buffer[blur_idx] = blurred;
                     output[i] += blurred * self.master_volume;
                 }
-                
+
                 self.blur_position = (self.blur_position + input.len()) % blur_len;
-            },
+            }
             MixMode::Stack => {
                 // All voices stacked with compression
                 for (i, sample) in input.iter().enumerate() {
                     let stacked = sample.tanh(); // Soft clipping
                     output[i] += stacked * self.master_volume;
                 }
-            },
+            }
             MixMode::Rotate => {
                 // Voice rotation handled at voice allocation level
                 for (i, sample) in input.iter().enumerate() {
                     output[i] += sample * self.master_volume;
                 }
-            },
+            }
         }
     }
 

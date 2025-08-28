@@ -1,9 +1,9 @@
 use bevy::prelude::*;
-use zimler_engine::{ZimlerEngine, EngineConfig, EngineHandle};
 use std::sync::{Arc, Mutex};
+use zimler_engine::{EngineConfig, EngineHandle, ZimlerEngine};
 
-mod ui;
 mod audio_backend;
+mod ui;
 
 use ui::ZimlerUiPlugin;
 
@@ -17,19 +17,19 @@ fn main() {
     let config = EngineConfig::default();
     let engine = Arc::new(Mutex::new(ZimlerEngine::new(config.clone())));
     let handle = engine.lock().unwrap().get_api_handle();
-    
+
     // Start audio backend in a separate thread
     let engine_clone = engine.clone();
     std::thread::spawn(move || {
-        let _audio_backend = audio_backend::AudioBackend::new(engine_clone, config)
-            .expect("Failed to init audio");
-        
+        let _audio_backend =
+            audio_backend::AudioBackend::new(engine_clone, config).expect("Failed to init audio");
+
         // Keep audio thread alive
         loop {
             std::thread::sleep(std::time::Duration::from_millis(100));
         }
     });
-    
+
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
@@ -45,9 +45,7 @@ fn main() {
         .run();
 }
 
-fn setup_scene(
-    mut commands: Commands,
-) {
+fn setup_scene(mut commands: Commands) {
     // Camera
     commands.spawn(Camera2d::default());
 }

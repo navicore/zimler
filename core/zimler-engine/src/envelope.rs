@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum EnvelopeShape {
@@ -80,7 +80,7 @@ impl Envelope {
                 } else {
                     1.0
                 };
-            },
+            }
             EnvelopeShape::AR { attack_ms, .. } => {
                 self.stage = EnvelopeStage::Attack;
                 self.target_value = 1.0;
@@ -90,7 +90,7 @@ impl Envelope {
                 } else {
                     1.0
                 };
-            },
+            }
             EnvelopeShape::Trapezoid { rise_ms, .. } => {
                 self.stage = EnvelopeStage::Attack;
                 self.target_value = 1.0;
@@ -100,7 +100,7 @@ impl Envelope {
                 } else {
                     1.0
                 };
-            },
+            }
         }
         self.stage_counter = 0;
     }
@@ -109,13 +109,13 @@ impl Envelope {
         if self.stage != EnvelopeStage::Idle && self.stage != EnvelopeStage::Release {
             self.stage = EnvelopeStage::Release;
             self.target_value = 0.0;
-            
+
             let release_ms = match self.shape {
                 EnvelopeShape::ADSR { release_ms, .. } => release_ms,
                 EnvelopeShape::AR { release_ms, .. } => release_ms,
                 EnvelopeShape::Trapezoid { fall_ms, .. } => fall_ms,
             };
-            
+
             self.samples_in_stage = ((release_ms / 1000.0) * self.sample_rate) as usize;
             self.rate = if self.samples_in_stage > 0 {
                 -self.current_value / self.samples_in_stage as f32
@@ -128,50 +128,55 @@ impl Envelope {
 
     pub fn process_sample(&mut self) {
         match self.stage {
-            EnvelopeStage::Idle => {},
+            EnvelopeStage::Idle => {}
             EnvelopeStage::Attack => {
                 self.current_value += self.rate;
                 self.stage_counter += 1;
-                
+
                 if self.stage_counter >= self.samples_in_stage || self.current_value >= 1.0 {
                     self.current_value = 1.0;
                     self.advance_stage();
                 }
-            },
+            }
             EnvelopeStage::Decay => {
                 self.current_value += self.rate;
                 self.stage_counter += 1;
-                
+
                 if self.stage_counter >= self.samples_in_stage {
                     self.advance_stage();
                 }
-            },
+            }
             EnvelopeStage::Sustain => {
                 // Hold at sustain level
-            },
+            }
             EnvelopeStage::Hold => {
                 self.stage_counter += 1;
                 if self.stage_counter >= self.samples_in_stage {
                     self.advance_stage();
                 }
-            },
+            }
             EnvelopeStage::Release => {
                 self.current_value += self.rate;
                 self.stage_counter += 1;
-                
+
                 if self.stage_counter >= self.samples_in_stage || self.current_value <= 0.0 {
                     self.current_value = 0.0;
                     self.stage = EnvelopeStage::Idle;
                 }
-            },
+            }
         }
-        
+
         self.current_value = self.current_value.clamp(0.0, 1.0);
     }
 
     fn advance_stage(&mut self) {
         match (&self.shape, self.stage) {
-            (EnvelopeShape::ADSR { decay_ms, sustain, .. }, EnvelopeStage::Attack) => {
+            (
+                EnvelopeShape::ADSR {
+                    decay_ms, sustain, ..
+                },
+                EnvelopeStage::Attack,
+            ) => {
                 self.stage = EnvelopeStage::Decay;
                 self.target_value = *sustain;
                 self.samples_in_stage = ((*decay_ms / 1000.0) * self.sample_rate) as usize;
@@ -181,15 +186,20 @@ impl Envelope {
                     0.0
                 };
                 self.stage_counter = 0;
-            },
+            }
             (EnvelopeShape::ADSR { sustain, .. }, EnvelopeStage::Decay) => {
                 self.stage = EnvelopeStage::Sustain;
                 self.current_value = *sustain;
-            },
+            }
             (EnvelopeShape::AR { .. }, EnvelopeStage::Attack) => {
                 self.stage = EnvelopeStage::Sustain;
-            },
-            (EnvelopeShape::Trapezoid { hold_ms, fall_ms, .. }, EnvelopeStage::Attack) => {
+            }
+            (
+                EnvelopeShape::Trapezoid {
+                    hold_ms, fall_ms, ..
+                },
+                EnvelopeStage::Attack,
+            ) => {
                 if *hold_ms > 0.0 {
                     self.stage = EnvelopeStage::Hold;
                     self.samples_in_stage = ((*hold_ms / 1000.0) * self.sample_rate) as usize;
@@ -205,7 +215,7 @@ impl Envelope {
                     };
                     self.stage_counter = 0;
                 }
-            },
+            }
             (EnvelopeShape::Trapezoid { fall_ms, .. }, EnvelopeStage::Hold) => {
                 self.stage = EnvelopeStage::Release;
                 self.target_value = 0.0;
@@ -216,8 +226,8 @@ impl Envelope {
                     -1.0
                 };
                 self.stage_counter = 0;
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 

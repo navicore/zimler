@@ -1,12 +1,26 @@
-use crossbeam::channel::{Sender, Receiver, bounded};
+use crossbeam::channel::{bounded, Receiver, Sender};
 use midir::{MidiInput, MidiInputConnection};
 
 #[derive(Debug, Clone)]
 pub enum MidiMessage {
-    NoteOn { channel: u8, note: u8, velocity: u8 },
-    NoteOff { channel: u8, note: u8 },
-    ControlChange { channel: u8, controller: u8, value: u8 },
-    PitchBend { channel: u8, value: u16 },
+    NoteOn {
+        channel: u8,
+        note: u8,
+        velocity: u8,
+    },
+    NoteOff {
+        channel: u8,
+        note: u8,
+    },
+    ControlChange {
+        channel: u8,
+        controller: u8,
+        value: u8,
+    },
+    PitchBend {
+        channel: u8,
+        value: u16,
+    },
 }
 
 pub struct MidiHandler {
@@ -36,7 +50,7 @@ impl MidiHandler {
 
         let status = data[0];
         let channel = status & 0x0F;
-        
+
         match status & 0xF0 {
             0x90 if data.len() >= 3 => {
                 let velocity = data[2];
@@ -52,27 +66,20 @@ impl MidiHandler {
                         note: data[1],
                     })
                 }
-            },
-            0x80 if data.len() >= 3 => {
-                Some(MidiMessage::NoteOff {
-                    channel,
-                    note: data[1],
-                })
-            },
-            0xB0 if data.len() >= 3 => {
-                Some(MidiMessage::ControlChange {
-                    channel,
-                    controller: data[1],
-                    value: data[2],
-                })
-            },
+            }
+            0x80 if data.len() >= 3 => Some(MidiMessage::NoteOff {
+                channel,
+                note: data[1],
+            }),
+            0xB0 if data.len() >= 3 => Some(MidiMessage::ControlChange {
+                channel,
+                controller: data[1],
+                value: data[2],
+            }),
             0xE0 if data.len() >= 3 => {
                 let value = ((data[2] as u16) << 7) | (data[1] as u16);
-                Some(MidiMessage::PitchBend {
-                    channel,
-                    value,
-                })
-            },
+                Some(MidiMessage::PitchBend { channel, value })
+            }
             _ => None,
         }
     }

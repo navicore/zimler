@@ -1,4 +1,4 @@
-use crate::{Sample, Envelope};
+use crate::{Envelope, Sample};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum VoiceState {
@@ -38,14 +38,12 @@ impl Voice {
         self.sample = Some(sample);
         self.position = 0.0;
         self.state = VoiceState::Active;
-        
+
         // Calculate pitch ratio for 1V/oct (each semitone up = ratio * 2^(1/12))
-        let root_note = self.sample.as_ref()
-            .and_then(|s| s.root_note)
-            .unwrap_or(60);
+        let root_note = self.sample.as_ref().and_then(|s| s.root_note).unwrap_or(60);
         let semitones = note as f64 - root_note as f64;
         self.pitch_ratio = 2.0_f64.powf(semitones / 12.0);
-        
+
         self.envelope.trigger();
     }
 
@@ -65,21 +63,21 @@ impl Voice {
             let channels = sample.channels;
             let sample_data = &sample.data;
             let sample_len = sample_data.len() / channels;
-            
+
             for (_i, out) in output.chunks_mut(channels).enumerate() {
                 if self.position >= sample_len as f64 {
                     self.state = VoiceState::Idle;
                     break;
                 }
-                
+
                 // Linear interpolation for sub-sample accuracy
                 let pos_floor = self.position.floor() as usize;
                 let pos_fract = self.position.fract() as f32;
-                
+
                 for ch in 0..channels.min(out.len()) {
                     let idx = pos_floor * channels + ch;
                     let next_idx = ((pos_floor + 1) * channels + ch).min(sample_data.len() - 1);
-                    
+
                     let sample_value = if idx < sample_data.len() {
                         let curr = sample_data[idx];
                         let next = sample_data[next_idx];
@@ -87,13 +85,13 @@ impl Voice {
                     } else {
                         0.0
                     };
-                    
+
                     out[ch] += sample_value * self.velocity * self.envelope.get_current_value();
                 }
-                
+
                 self.position += self.pitch_ratio;
                 self.envelope.process_sample();
-                
+
                 if self.envelope.is_finished() {
                     self.state = VoiceState::Idle;
                 }
