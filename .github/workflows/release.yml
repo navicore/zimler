@@ -24,6 +24,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libwayland-dev \
+          libxkbcommon-dev \
+          libasound2-dev \
+          libx11-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libudev-dev
+    
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
       with:

@@ -26,6 +26,27 @@ Clean API separation between core engine and UI:
 
 ## Building
 
+### Prerequisites
+
+#### Linux
+```bash
+# Ubuntu/Debian
+sudo apt-get install libwayland-dev libxkbcommon-dev libasound2-dev \
+                     libx11-dev libxi-dev libgl1-mesa-dev libudev-dev
+
+# Fedora
+sudo dnf install wayland-devel libxkbcommon-devel alsa-lib-devel \
+                 libX11-devel libXi-devel mesa-libGL-devel systemd-devel
+```
+
+#### macOS
+No additional dependencies needed.
+
+#### Windows
+No additional dependencies needed.
+
+### Build Commands
+
 ```bash
 # Build everything
 make
