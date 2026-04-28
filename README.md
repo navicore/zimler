@@ -1,3 +1,8 @@
+<!-- ghmig:moved -->
+> **This repository has moved to [https://git.navicore.tech/navicore/zimler](https://git.navicore.tech/navicore/zimler).**
+>
+> The GitHub copy is archived and no longer maintained.
+
 # Zimler - Creative Sampler
 
 A polyglot sampler plugin project combining Rust performance with flexible UI options.
